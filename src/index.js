@@ -5,7 +5,7 @@ import 'font-awesome/css/font-awesome.min.css';
 import "./styles.css";
 
 const API_URL = "https://backend-ta-production-fa27.up.railway.app";
-const WS_URL = "wss://backend-ta-production-fa27.up.railway.app";
+const WS_URL = "8f3fd6867485477db38c34b326a4073b.s1.eu.hivemq.cloud:8884/mqtt";
 
 window.loadPage = (page) => {
     if (page === "home") {
@@ -208,6 +208,15 @@ function updateStatusCondition(average, wateringStatus) {
         wateringEl.style.color = wateringStatus ? "#00c853" : "#999";
     }
 }
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+    .then(reg => console.log('Service Worker registered:', reg))
+    .catch(err => console.error('Service Worker registration failed:', err));
+    });
+}
+
 
 
 console.log("⏱️ Cek average-circle:", document.getElementById("average-circle"));
