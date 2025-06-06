@@ -63,6 +63,4 @@ class HourlyChart extends HTMLElement {
     }
 }
 
-if (!customElements.get('hourly-chart')) {
-  customElements.define('hourly-chart', HourlyChart);
-}
+customElements.define('hourly-chart', HourlyChart);

@@ -1,79 +1,96 @@
 import homePage from "./pages/home.js";
 import aboutPage from "./pages/about.js";
-import "./components/navbar.js";
+import schedulePage from "./pages/schedulePage.js";
+import './components';
 import 'font-awesome/css/font-awesome.min.css';
 import "./styles.css";
 
-const API_URL = "https://backend-ta-production-fa27.up.railway.app";
-const WS_URL = "8f3fd6867485477db38c34b326a4073b.s1.eu.hivemq.cloud:8884/mqtt";
+const API_URL = "https://naffscg.my.id";
+const WS_URL = "wss://naffscg.my.id";
+let globalWebSocket = null;
 
-window.loadPage = (page) => {
-    if (page === "home") {
-        homePage();
-        setupEventListeners(); // Tambahkan ini
+window.loadPage = async (page) => {
+    const main = document.getElementById("mainContent");
+    if (!main) {
+        console.error("Elemen #mainContent tidak ditemukan!");
+        return;
     }
-    if (page === "about") aboutPage();
+
+    main.innerHTML = "";
+
+    let pageContent;
+    switch (page) {
+        case "home":
+            pageContent = homePage();
+            break;
+        case "about":
+            pageContent = aboutPage();
+            break;
+        case "schedule":
+            pageContent = schedulePage();
+            break;
+        default:
+            console.warn(`Halaman '${page}' tidak dikenal.`);
+            return;
+    }
+
+    if (pageContent) {
+        main.appendChild(pageContent);
+    }
+
+    if (page === "home") {
+        await fetchPesticideStatus();
+        setupPesticideToggleListener();
+        setupWebSocket();
+    }
 };
 
-
-document.addEventListener("DOMContentLoaded", () => {
-    loadPage("home");
-    fetchPesticideStatus();
-    setupWebSocket();
-});
-
-  function setupEventListeners() {
-    const checkInterval = setInterval(() => {
-        const averageCircle = document.getElementById("average-circle");
-        if (averageCircle) {
-            clearInterval(checkInterval);
-            console.log("✅ average-circle ditemukan di DOM, setup WebSocket dimulai");
-            fetchPesticideStatus();
-            setupWebSocket();
-        } else {
-            console.log("⏳ Menunggu average-circle...");
-        }
-    }, 100);
-
+function setupPesticideToggleListener() {
     const pesticideToggle = document.getElementById("pesticide-toggle");
     if (pesticideToggle) {
+        pesticideToggle.removeEventListener("change", handlePesticideToggle);
         pesticideToggle.addEventListener("change", handlePesticideToggle);
+        console.log("✅ Event listener untuk pesticide-toggle terpasang.");
     } else {
-        console.error("❌ Elemen pesticide-toggle tidak ditemukan!");
+        console.warn("⚠️ Elemen pesticide-toggle tidak ditemukan saat mencoba memasang listener.");
     }
 }
 
-//Update warna dan progress bar
+// Update warna dan progress bar
 function setProgressCircle(circleId, percentage){
     const circle = document.getElementById(circleId);
     if(!circle) return;
 
     let color = "#00cfd1";
-    if(percentage<40){
-        color="#e53935";
-    }else if(percentage <60){
-        color="#fbc02d";
+    if(percentage < 40){
+        color = "#e53935";
+    } else if(percentage < 60){
+        color = "#fbc02d";
     }
 
-    circle.style.background=`conic-gradient(${color} 0% ${percentage}%, #eee ${percentage}% 100%)`;
-
-    circle.setAttribute("data-tooltip", `${percentage}%`)
+    circle.style.background = `conic-gradient(${color} 0% ${percentage}%, #eee ${percentage}% 100%)`;
+    circle.setAttribute("data-tooltip", `${percentage}%`);
 }
 
-// ✅ Fungsi untuk mendapatkan status pestisida
 async function fetchPesticideStatus() {
+    const pesticideToggleElement = document.getElementById("pesticide-toggle");
+    if (!pesticideToggleElement) {
+        console.warn("⚠️ Elemen pesticide-toggle tidak ditemukan, tidak bisa mengambil status awal.");
+        return;
+    }
+
     try {
         const response = await fetch(`${API_URL}/pesticide/status`);
         if (!response.ok) throw new Error("Gagal mengambil status pestisida");
 
         const data = await response.json();
+        console.log("✅ Status pestisida awal dari API:", data.status);
         updatePesticideStatus(data.status);
     } catch (error) {
         console.error("⛔ Gagal mengambil status pestisida:", error);
     }
 }
 
-// ✅ Fungsi untuk mengontrol pompa pestisida
 async function handlePesticideToggle(event) {
     const status = event.target.checked ? "ON" : "OFF";
     console.log(`🚀 Mengirim kontrol pestisida: ${status}`);
@@ -88,19 +105,26 @@ async function handlePesticideToggle(event) {
         const result = await response.json();
         console.log("✅ Response dari server:", result);
 
-        if (response.ok) {
-            updatePesticideStatus(status);
-        } else {
+        if (!response.ok) {
             console.error("❌ Gagal mengirim kontrol pestisida:", result);
+            const toggle = document.getElementById("pesticide-toggle");
+            if (toggle) toggle.checked = !event.target.checked;
         }
     } catch (error) {
         console.error("⛔ Kesalahan saat mengirim kontrol pestisida:", error);
+        const toggle = document.getElementById("pesticide-toggle");
+        if (toggle) toggle.checked = !event.target.checked;
     }
 }
 
-// ✅ Fungsi untuk menerima update WebSocket
 function setupWebSocket() {
+    if (globalWebSocket && globalWebSocket.readyState === WebSocket.OPEN) {
+        console.log("🔗 WebSocket sudah terhubung.");
+        return;
+    }
+
     const socket = new WebSocket(WS_URL);
+    globalWebSocket = socket;
 
     socket.onopen = () => {
         console.log("🔗 WebSocket connected");
@@ -109,74 +133,99 @@ function setupWebSocket() {
     socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
         console.log("📩 Data diterima dari WebSocket:", data);
-
         if (data.topic === "moisture/data") {
-            let moistureData;
-            try{
-                moistureData = typeof data.msg === "string"? JSON.parse(data.msg) : data.msg;
-                updateMoistureData(moistureData);
+            const averageCircleElement = document.getElementById("average-circle");
+            if (averageCircleElement) {
+                let moistureData;
+                try {
+                    moistureData = typeof data.msg === "string" ? JSON.parse(data.msg) : data.msg;
+                    updateMoistureData(moistureData);
+                } catch (e) {
+                    console.error("Gagal mem-parse data moisture dari WebSocket:", e);
+                }
+            } else {
+                console.warn("⚠️ Elemen kelembapan tidak ditemukan di DOM, melewatkan update moisture/data.");
             }
-            catch(e){
-                console.error("Gagal mem-parse data moisture:",e);
+        } else if (data.topic === "pesticide/status") {
+            const pesticideToggleElement = document.getElementById("pesticide-toggle");
+            if (pesticideToggleElement) {
+                const pesticideStatus = data.msg;
+                console.log(`💡 Status pestisida diterima via WebSocket: ${pesticideStatus}`);
+                updatePesticideStatus(pesticideStatus);
+            } else {
+                console.warn("⚠️ Elemen pesticide-toggle tidak ditemukan di DOM, melewatkan update pesticide/status.");
             }
         }
     };
 
     socket.onclose = () => {
         console.log("❌ WebSocket disconnected. Mencoba reconnect dalam 3 detik...");
+        globalWebSocket = null;
         setTimeout(setupWebSocket, 3000);
     };
 
     socket.onerror = (error) => {
         console.error("WebSocket error:", error);
+        if (globalWebSocket) {
+            globalWebSocket.close();
+            globalWebSocket = null;
+        }
     };
 }
 
-// ✅ Fungsi untuk update data kelembapan tanah secara real-time
+function closeWebSocket() {
+    if (globalWebSocket && globalWebSocket.readyState === WebSocket.OPEN) {
+        globalWebSocket.close();
+        globalWebSocket = null;
+        console.log("❌ WebSocket closed.");
+    }
+}
+
 function updateMoistureData(data) {
     try {
         const moistureElements = [
-            { id: "moisture1-value", value: `${data.moisture1}%` },
-            { id: "moisture2-value", value: `${data.moisture2}%` },
-            { id: "moisture3-value", value: `${data.moisture3}%` },
-            { id: "average-value", value: `${data.average}%` }
+            { id: "moisture1-value", value: `${data.moisture1}%`, circleId: "moisture1-circle" },
+            { id: "moisture2-value", value: `${data.moisture2}%`, circleId: "moisture2-circle" },
+            { id: "moisture3-value", value: `${data.moisture3}%`, circleId: "moisture3-circle" },
+            { id: "average-value", value: `${data.average}%`, circleId: "average-circle" }
         ];
 
-        moistureElements.forEach(({ id, value }) => {
+        moistureElements.forEach(({ id, value, circleId }) => {
             const element = document.getElementById(id);
             if (element) {
                 element.innerText = value;
                 const percent = parseInt(value);
-                const circleId = id.replace("-value","-circle");
-                setProgressCircle(circleId,percent);
+                setProgressCircle(circleId, percent);
             } else {
-                console.warn(`⚠️ Elemen ${id} tidak ditemukan di DOM!`);
+                console.warn(`⚠️ Elemen ${id} tidak ditemukan di DOM saat updateMoistureData.`);
             }
         });
     } catch (error) {
         console.error("Gagal memproses data kelembapan dari WebSocket:", error);
     }
-    // Update kondisi kelembapan dan status penyiraman
-updateStatusCondition(data.average, data.moisture_pump_status);
-
+    updateStatusCondition(data.average, data.moisture_pump_status);
 }
 
-// ✅ Fungsi untuk update status pestisida secara real-time
 function updatePesticideStatus(status) {
     const toggle = document.getElementById("pesticide-toggle");
     const statusText = document.getElementById("pesticide-pump-status");
 
-    if (toggle) toggle.checked = status === "ON" || status === true;
+    const isActive = status === "ON" || status === true;
+
+    if (toggle) {
+        toggle.checked = isActive;
+    } else {
+        console.warn("⚠️ Elemen pesticide-toggle tidak ditemukan saat update status.");
+    }
 
     if (statusText) {
-        const isActive = status === "ON" || status === true;
-
         statusText.innerText = isActive ? "Aktif" : "Tidak Aktif";
         statusText.style.fontWeight = "bold";
-        statusText.style.color = isActive ? "#00c853" : "#999"; // Hijau atau abu-abu
+        statusText.style.color = isActive ? "#00c853" : "#e53935";
+    } else {
+        console.warn("⚠️ Elemen pesticide-pump-status tidak ditemukan saat update status.");
     }
 }
-
 
 function updateStatusCondition(average, wateringStatus) {
     const conditionEl = document.getElementById("moisture-condition");
@@ -184,40 +233,43 @@ function updateStatusCondition(average, wateringStatus) {
 
     if (conditionEl) {
         let conditionText = "Tidak diketahui";
-        let color = "#999"; // Default abu-abu
+        let color = "#999";
 
         if (average < 50) {
             conditionText = "Kering";
-            color = "#e53935"; // Merah
+            color = "#e53935"; 
         } else if (average <= 85) {
             conditionText = "Normal";
-            color = "#fbc02d"; // Kuning
+            color = "#fbc02d"; 
         } else {
             conditionText = "Basah";
-            color = "#00cfd1"; // Biru
+            color = "#00cfd1"; 
         }
 
         conditionEl.innerText = conditionText;
         conditionEl.style.fontWeight = "bold";
         conditionEl.style.color = color;
+    } else {
+        console.warn("⚠️ Elemen moisture-condition tidak ditemukan saat update status kondisi.");
     }
 
     if (wateringEl) {
         wateringEl.innerText = wateringStatus ? "Aktif" : "Tidak Aktif";
         wateringEl.style.fontWeight = "bold";
-        wateringEl.style.color = wateringStatus ? "#00c853" : "#999";
+        wateringEl.style.color = wateringStatus ? "#00c853" : "#e53935";
+    } else {
+        console.warn("⚠️ Elemen watering-status tidak ditemukan saat update status penyiraman.");
     }
 }
 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js')
-    .then(reg => console.log('Service Worker registered:', reg))
-    .catch(err => console.error('Service Worker registration failed:', err));
+        navigator.serviceWorker.register('/service-worker.js')
+            .then(reg => console.log('Service Worker registered:', reg))
+            .catch(err => console.error('Service Worker registration failed:', err));
     });
 }
 
-
-
-console.log("⏱️ Cek average-circle:", document.getElementById("average-circle"));
-
+document.addEventListener("DOMContentLoaded", () => {
+    loadPage("home");
+});

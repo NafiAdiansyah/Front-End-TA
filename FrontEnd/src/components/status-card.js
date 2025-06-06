@@ -20,6 +20,4 @@ class StatusCard extends HTMLElement {
         `;
     }
 }
-if (!customElements.get('status-card')) {
-  customElements.define('status-card', StatusCard);
-}
+customElements.define('status-card', StatusCard);

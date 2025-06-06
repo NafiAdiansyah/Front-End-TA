@@ -1,3 +1,7 @@
+import '../components/sensor-card.js';
+import '../components/status-card.js';
+import '../components/hourlyChart.js'
+
 const homePage= () =>{
     const container = document.createElement("div");
     container.innerHTML=`

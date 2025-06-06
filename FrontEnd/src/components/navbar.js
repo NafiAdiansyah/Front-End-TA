@@ -150,6 +150,4 @@ class Navbar extends HTMLElement {
     }
 }
 
-if (!customElements.get('nav-bar')) {
-  customElements.define('nav-bar', Navbar);
-}
+customElements.define('nav-bar', Navbar);

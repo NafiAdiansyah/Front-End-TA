@@ -1,35 +1,107 @@
+/*
+ * ========================================
+ * Global Styles & Typography
+ * ========================================
+ */
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap');
 
-body {
-    font-family: "Quicksand";
-    margin: 0;
-    padding: 0;
-    background: #F2F2F2;
+:root {
+    /* Colors */
+    --primary-green: #B0DB9C;
+    --secondary-green: #3baf65;
+    --light-green-bg: #ecfae5d0;
+    /* Card background with transparency */
+    --light-green-bg-solid: #ecfae5;
+    /* Inner circle background */
+    --dark-text: #3b3a3a;
+    --light-text: #eee;
+    --red-alert: #e53935;
+    --yellow-warning: #fbc02d;
+    --blue-info: #00cfd1;
+    --inactive-gray: #656565;
+    /* Slider inactive background */
+    --default-bg: #F2F2F2;
+    /* Body background */
+    --card-shadow: rgba(0, 0, 0, 0.1);
+
+    /* Spacing */
+    --padding-small: 10px;
+    --padding-medium: 1rem;
+    --padding-large: 30px;
+    --margin-small: 0.5rem;
+    --margin-medium: 1rem;
+    --margin-large: 2rem;
+
+    /* Borders & Radii */
+    --border-radius-small: 12px;
+    --border-radius-medium: 1rem;
+    --border-radius-large: 20px;
+    --border-radius-circle: 50%;
 }
 
+body {
+    font-family: "Quicksand", sans-serif;
+    /* Fallback font */
+    margin: 0;
+    padding: 0;
+    background: var(--default-bg);
+    height: 100%;
+    /* Ensure body takes full viewport height */
+    color: var(--dark-text);
+    /* Default text color */
+}
+
+/*
+ * ========================================
+ * Navigation Bar (Navbar)
+ * ========================================
+ */
 .navbar {
-    background: #B0DB9C;
-    padding: 10px;
+    background: var(--primary-green);
+    padding: var(--padding-small);
     text-align: center;
 }
 
 .navbar a {
     color: white;
+    /* Contrast with green background */
     margin: 0 15px;
     text-decoration: none;
+    transition: color 0.2s ease;
 }
 
+.navbar a:hover {
+    color: var(--light-text);
+    /* Slight hover effect */
+}
+
+/*
+ * ========================================
+ * General Container Styles
+ * ========================================
+ */
 .container {
-    padding: 1rem;
+    padding: var(--padding-medium);
 }
 
+/*
+ * ========================================
+ * Sensor Grid Layout
+ * ========================================
+ */
 .container-sensor {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1rem 1rem;
+    gap: var(--padding-medium);
+    /* Use gap variable for consistency */
     justify-items: center;
 }
 
+/*
+ * ========================================
+ * Responsive Adjustments
+ * ========================================
+ */
 @media (min-width: 601px) {
     .container-sensor {
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -40,13 +112,14 @@ body {
 
     .moisture-card,
     .pesticide-control-card {
+        /* Assuming this class is used for the pesticide card */
         transform: scale(0.85);
         transform-origin: center;
     }
 
     .container-sensor {
-        gap: 0.5rem 0.5rem;
-
+        gap: 0.5rem;
+        /* Smaller gap on small screens */
     }
 
     .sensor-label {
@@ -64,19 +137,24 @@ body {
     }
 }
 
-
-
+/*
+ * ========================================
+ * Moisture Cards & Progress Circles
+ * ========================================
+ */
 .moisture-card {
-    background: #ecfae5d0;
-    border-radius: 1rem;
-    padding: 1rem;
+    background: var(--light-green-bg);
+    border-radius: var(--border-radius-medium);
+    padding: var(--padding-medium);
     text-align: center;
-    box-shadow: 0 2px 6px black;
+    box-shadow: 0 2px 6px var(--card-shadow);
+    /* Use shadow variable */
     position: relative;
     max-width: 300px;
     width: 87%;
+    /* Adjusted for relative width */
     height: 150px;
-    /* sesuaikan dengan kebutuhan */
+    /* Fixed height, consider responsive alternatives if needed */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -91,13 +169,19 @@ body {
 .progress-circle {
     width: 100px;
     height: 100px;
-    border-radius: 50%;
+    border-radius: var(--border-radius-circle);
     background: conic-gradient(#eee 0% 100%);
+    /* Default empty state */
     position: relative;
     display: flex;
     margin: 0 auto;
     align-items: center;
     justify-content: center;
+    transition: background 0.5s ease-in-out;
+    /* Moved transition here for clarity */
+    cursor: pointer;
+    margin-top: 40px;
+    /* Specific margin for circles in cards */
 }
 
 .progress-circle::before {
@@ -105,8 +189,9 @@ body {
     position: absolute;
     width: 70%;
     height: 70%;
-    background: #ecfae5;
-    border-radius: 50%;
+    background: var(--light-green-bg-solid);
+    /* Inner circle background */
+    border-radius: var(--border-radius-circle);
     z-index: 1;
 }
 
@@ -117,19 +202,13 @@ body {
     font-size: 1.2rem;
 }
 
-.progress-circle {
-    transition: background 0.5s ease-in-out;
-    position: relative;
-    cursor: pointer;
-    margin-top: 40px;
-}
-
 .progress-circle:hover::after {
     content: attr(data-tooltip);
     position: absolute;
     bottom: -30px;
     background: #333;
-    color: #eee;
+    /* Dark background for tooltip */
+    color: var(--light-text);
     font-size: 12px;
     padding: 4px 8px;
     border-radius: 6px;
@@ -137,10 +216,14 @@ body {
     z-index: 3;
 }
 
-
-/* Toggle Switch */
+/*
+ * ========================================
+ * Toggle Switch Component
+ * ========================================
+ */
 .switch {
     margin-top: 40px;
+    /* Specific margin for switches in cards */
     position: relative;
     display: inline-block;
     width: 70px;
@@ -160,38 +243,47 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #656565;
+    background-color: var(--inactive-gray);
     border-radius: 25px;
+    /* Fully rounded corners */
     transition: 0.4s;
 }
 
-.slider:before {
+.slider::before {
+    /* Changed from :before to ::before for modern syntax */
     position: absolute;
     content: "";
     height: 30px;
     width: 30px;
     left: 4px;
     bottom: 2.5px;
-    background-color: #c82323;
-    border-radius: 50%;
+    background-color: var(--red-alert);
+    /* Off state color */
+    border-radius: var(--border-radius-circle);
     transition: 0.4s;
 }
 
-
-input:checked+.slider:before {
+input:checked+.slider::before {
+    /* Changed from :before to ::before */
     transform: translateX(32px);
-    background-color: #3baf65;
+    background-color: var(--secondary-green);
+    /* On state color */
 }
 
+/*
+ * ========================================
+ * Sensor Labels
+ * ========================================
+ */
 .sensor-label {
     position: absolute;
-    top: 10px;
+    top: var(--padding-small);
     left: 50%;
     transform: translateX(-50%);
-    background: #B0DB9C;
-    color: #3b3a3a;
+    background: var(--primary-green);
+    color: var(--dark-text);
     padding: 6px 12px;
-    border-radius: 12px;
+    border-radius: var(--border-radius-small);
     font-size: 1rem;
     font-weight: bold;
     z-index: 2;
@@ -205,18 +297,21 @@ input:checked+.slider:before {
     font-weight: 600;
 }
 
-
-
-/* status-card */
-
+/*
+ * ========================================
+ * Status Card (General)
+ * ========================================
+ */
 .header-text {
-    top: 10px;
+    /* Reused for card headers, consider renaming to something more generic like .card-header-label */
+    /* This class seems to duplicate styles from .sensor-label, consider merging if applicable */
+    top: var(--padding-small);
     left: 50%;
     transform: translateX(-50%);
-    background: #B0DB9C;
-    color: #3b3a3a;
+    background: var(--primary-green);
+    color: var(--dark-text);
     padding: 6px 12px;
-    border-radius: 12px;
+    border-radius: var(--border-radius-small);
     font-size: 1rem;
     font-weight: bold;
     z-index: 2;
@@ -226,17 +321,24 @@ input:checked+.slider:before {
     width: 140px;
     height: 140px;
     margin-top: 0;
+    /* Override margin from .progress-circle */
 }
 
 .status-content {
-    background: #ecfae5d0;
-    border-radius: 1rem;
-    padding: 1rem;
-    box-shadow: 0 2px 6px black;
+    background: var(--light-green-bg);
+    border-radius: var(--border-radius-medium);
+    padding: var(--padding-medium);
+    font-weight: bold;
+    box-shadow: 0 2px 6px var(--card-shadow);
     text-align: center;
     height: 100%;
+    /* Fill available height in grid */
     transition: transform 0.2s ease;
-
+    display: flex;
+    /* Added for better vertical alignment if content varies */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .status-content:hover {
@@ -244,18 +346,39 @@ input:checked+.slider:before {
 }
 
 .text-status p {
-    margin: 0.5rem 0;
+    margin: var(--margin-small) 0;
+    /* Use margin variable */
 }
 
-/*Hourly Chart*/
+.status-content p {
+    color: var(--dark-text);
+}
+
+#pesticide-pump-status {
+    color: var(--red-alert);
+    /* Default to red (inactive) */
+}
+
+/*
+ * ========================================
+ * Hourly Chart Card
+ * ========================================
+ */
 .chart-card {
-    background-color: #ecfae5d0;
-    border-radius: 16px;
-    padding: 1rem;
-    box-shadow: 0 2px 6px black;
+    background-color: var(--light-green-bg);
+    border-radius: var(--border-radius-large);
+    /* Rounded corners */
+    padding: var(--padding-medium);
+    box-shadow: 0 2px 6px var(--card-shadow);
     height: 100%;
     text-align: center;
+    display: flex;
+    /* Use flexbox for centering content */
+    flex-direction: column;
     align-items: center;
+    /* Center horizontally */
+    justify-content: center;
+    /* Center vertically if height allows */
     transition: transform 0.2s ease;
 }
 
@@ -265,70 +388,83 @@ input:checked+.slider:before {
 
 .chart-card h3 {
     display: inline-block;
-    /* ⬅️ Membatasi lebar sesuai isi */
     padding: 6px 12px;
-    /* ⬅️ Tambah padding horizontal */
-    background: #B0DB9C;
-    color: #3b3a3a;
-    border-radius: 12px;
+    background: var(--primary-green);
+    color: var(--dark-text);
+    border-radius: var(--border-radius-small);
     font-size: 1rem;
     font-weight: bold;
-    margin: 0 auto 1rem auto;
-    /* ⬅️ Center horizontal + jarak bawah */
+    margin: 0 auto var(--margin-medium) auto;
+    /* Center horizontal + bottom margin */
     text-align: center;
     position: relative;
     z-index: 2;
 }
 
-
 .chart-card canvas {
     width: 100% !important;
+    /* Override Chart.js inline styles */
     height: auto !important;
+    /* Maintain aspect ratio */
 }
 
+/*
+ * ========================================
+ * Status and Chart Layout
+ * ========================================
+ */
 .status-and-chart {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin-top: 2rem;
-    margin-bottom: 2rem;
+    gap: var(--padding-medium);
+    margin-top: var(--margin-large);
+    margin-bottom: var(--margin-large);
 }
 
 @media (max-width: 768px) {
     .status-and-chart {
         grid-template-columns: 1fr;
+        /* Stack columns on small screens */
         gap: 4rem;
+        /* Larger gap when stacked */
     }
 }
 
-
-/*About Page*/
+/*
+ * ========================================
+ * About Page Layout
+ * ========================================
+ */
 .row {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
     gap: 40px;
+    /* Fixed gap for rows */
 }
 
 .row.reverse {
     flex-direction: row-reverse;
 }
 
-/* Columns */
 .image-col,
 .text-col {
     flex: 1 1 300px;
+    /* Flex basis for columns */
     text-align: center;
 }
 
-/* Images */
 .img-fluid {
     max-width: 100%;
     height: auto;
 }
 
-/* Headings and Text */
+/*
+ * ========================================
+ * Headings and Paragraphs
+ * ========================================
+ */
 .display-6 {
     font-size: 2rem;
     font-weight: bold;
@@ -337,7 +473,8 @@ input:checked+.slider:before {
 }
 
 .color-ww {
-    color: #3baf65;
+    color: var(--secondary-green);
+    /* Use variable for consistent color */
 }
 
 .lead {
@@ -346,14 +483,20 @@ input:checked+.slider:before {
     margin-top: 10px;
 }
 
-/* Team Section */
+/*
+ * ========================================
+ * Team Section
+ * ========================================
+ */
 #Team {
-    background-color: #F2F2F2;
+    background-color: var(--default-bg);
 }
 
 .text-center {
+    /* Reused class for centering content */
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: var(--padding-large);
+    /* Consistent margin */
 }
 
 #Team h2 {
@@ -365,17 +508,23 @@ input:checked+.slider:before {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 30px;
+    gap: var(--padding-large);
+    /* Consistent gap for grid items */
 }
 
-/* Cards */
+/*
+ * ========================================
+ * Team Member Cards
+ * ========================================
+ */
 .card {
-    background-color: #F2F2F2;
-    border: 3px solid #3baf65;
-    border-radius: 20px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    padding: 30px 20px;
+    background-color: var(--default-bg);
+    border: 3px solid var(--secondary-green);
+    border-radius: var(--border-radius-large);
+    box-shadow: 0 8px 20px var(--card-shadow);
+    padding: var(--padding-large) 20px;
     width: 260px;
+    /* Fixed width, consider max-width for responsiveness */
     text-align: center;
     transition: transform 0.3s;
 }
@@ -387,21 +536,22 @@ input:checked+.slider:before {
 .profile-img {
     width: 130px;
     height: 130px;
-    border-radius: 50%;
-    border: 3px solid #3baf65;
+    border-radius: var(--border-radius-circle);
+    border: 3px solid var(--secondary-green);
     object-fit: cover;
     margin-bottom: 15px;
 }
 
 .card-title {
     font-size: 1.1rem;
-    color: #3baf65;
+    color: var(--secondary-green);
     margin-bottom: 5px;
 }
 
 .card-text {
     font-size: 1rem;
     color: #666;
+    /* Specific color, could be added to variables */
     margin-bottom: 15px;
 }
 
@@ -411,27 +561,36 @@ input:checked+.slider:before {
     gap: 10px;
 }
 
-/* Icon Buttons */
+/*
+ * ========================================
+ * Social Icons (Buttons)
+ * ========================================
+ */
 .icons-size {
     font-size: 1.2rem;
     padding: 8px 10px;
     border-radius: 8px;
-    border: 2px solid #3baf65;
+    border: 2px solid var(--secondary-green);
     background-color: transparent;
-    color: #3baf65;
+    color: var(--secondary-green);
     cursor: pointer;
     transition: all 0.3s;
 }
 
 .icons-size:hover {
-    background-color: #3baf65;
+    background-color: var(--secondary-green);
     color: white;
 }
 
-/* Responsive */
+/*
+ * ========================================
+ * Responsive Adjustments (About Page)
+ * ========================================
+ */
 @media (max-width: 768px) {
     .row {
         flex-direction: column;
+        /* Stack columns on small screens */
     }
 
     .display-6 {

@@ -25,7 +25,7 @@ const aboutPage = () => {
       </div>
       <div class="text-col">
         <h1 class="display-6">Kenapa Smart Chili Garden?</h1>
-        <p class="lead">"Smart Chili Garden" dipilih sebagai nama karena sistem ini secara khusus dirancang untuk mendukung budidaya cabai (chili) secara cerdas melalui implementasi IoT yang memungkinkan monitoring kelembaban tanah secara real-time, penyiraman air otomatis, serta kontrol manual maupun penjadwalan pompa pestisida melalui website, sehingga meningkatkan efisiensi dan kemudahan dalam pengelolaan tanaman.</p>
+        <p class="lead">"Smart Chili Garden" dipilih sebagai nama karena sistem ini secara khusus dirancang untuk mendukung budidaya cabai (chili) secara cerdas melalui implementasi IoT yang memungkinkan monitoring kelembaban tanah secara real-time, penyiraman air otomatis, serta kontrol manual pompa pestisida melalui website, sehingga meningkatkan efisiensi dan kemudahan dalam pengelolaan tanaman.</p>
       </div>
     </div>
   </section>
