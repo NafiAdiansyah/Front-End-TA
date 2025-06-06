@@ -1,5 +1,5 @@
 {
-  "name": "Smart-Chili-Garden",
+  "name": "smart-chili-garden",
   "version": "1.0.0",
   "description": "Frontend aplikasi IoT tugas akhir untuk pemantauan dan kontrol berbasis WebSocket dan MQTT",
   "main": "index.js",
