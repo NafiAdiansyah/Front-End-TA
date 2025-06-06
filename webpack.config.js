@@ -36,7 +36,7 @@ module.exports = {
     }),
     new CopyWebpackPlugin({
       patterns: [
-        { from: 'public', globOptions: { ignore: ['**/index.html'] } }, // salin selain index.html
+        { from: 'public', globOptions: { ignore: ['**/index.html', '**/service-worker.js'] } }, // salin selain index.html
       ],
     }),
     new GenerateSW({
