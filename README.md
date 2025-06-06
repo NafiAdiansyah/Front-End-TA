@@ -18,10 +18,13 @@ Aplikasi frontend untuk sistem pemantauan dan pengendalian otomatis berbasis IoT
    cd repo-ini
 
 2. Install dependensi
+   ```bash
     npm install
 
-3. Jalankan server lokal
+4. Jalankan server lokal
+   ```bash
     npm run start
 
-4. Build untuk production
+6. Build untuk production
+   ```bash
     npm run build
