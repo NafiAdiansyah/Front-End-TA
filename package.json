@@ -1,15 +1,22 @@
 {
-  "name": "percobaan-no-be",
+  "name": "Smart-Chili-Garden",
   "version": "1.0.0",
-  "description": "",
+  "description": "Frontend aplikasi IoT tugas akhir untuk pemantauan dan kontrol berbasis WebSocket dan MQTT",
   "main": "index.js",
   "scripts": {
-    "build": "webpack",
-    "start": "webpack serve --open"
+    "start": "webpack serve --mode development --open",
+    "build": "webpack --mode production"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "IoT",
+    "WebSocket",
+    "MQTT",
+    "frontend",
+    "webpack",
+    "PWA"
+  ],
+  "author": "Nafiadnsyh",
+  "license": "MIT",
   "dependencies": {
     "chart.js": "^4.4.9",
     "font-awesome": "^4.7.0",

@@ -519,7 +519,7 @@ input:checked+.slider::before {
  */
 .card {
     background-color: var(--default-bg);
-    border: 3px solid var(--secondary-green);
+    border: 3px solid var(--primary-green);
     border-radius: var(--border-radius-large);
     box-shadow: 0 8px 20px var(--card-shadow);
     padding: var(--padding-large) 20px;
@@ -537,7 +537,7 @@ input:checked+.slider::before {
     width: 130px;
     height: 130px;
     border-radius: var(--border-radius-circle);
-    border: 3px solid var(--secondary-green);
+    border: 3px solid var(--primary-green);
     object-fit: cover;
     margin-bottom: 15px;
 }

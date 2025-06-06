@@ -140,6 +140,7 @@ padding: 5px;
   .schedule-container {
     flex-direction: column;
     align-items: center;
+    margin: 1rem;
   }
 }
 

@@ -1,18 +1,16 @@
 const path = require('path');
 const { GenerateSW } = require('workbox-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   entry: './src/index.js',
   output: {
-    filename: 'bundle.js',
+    filename: 'bundle.scg.js', // cache busting
     path: path.resolve(__dirname, 'dist'),
     clean: true,
   },
-  devServer: {
-    static: './public',
-    hot: true,
-  },
+  mode: 'production', // ganti dari development ke production
   module: {
     rules: [
       {
@@ -27,12 +25,16 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './public/index.html', // supaya manifest dan icon bisa ikut build
+      template: './public/index.html',
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: 'public', globOptions: { ignore: ['**/index.html'] } }, // salin selain index.html
+      ],
     }),
     new GenerateSW({
       clientsClaim: true,
       skipWaiting: true,
     }),
   ],
-  mode: 'development', // ganti ke 'production' jika mau deploy
 };
