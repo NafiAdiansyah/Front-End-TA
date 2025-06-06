@@ -1,20 +1,20 @@
 const path = require('path');
-const { GenerateSW } = require('workbox-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const { InjectManifest } = require('workbox-webpack-plugin');
 
 module.exports = {
   entry: './src/index.js',
   output: {
-    filename: 'bundle.[contenthash].js', // cache busting
+    filename: 'bundle.[contenthash].js',
     path: path.resolve(__dirname, 'dist'),
     clean: true,
   },
-  mode: 'production', // ganti dari development ke production
-  optimization:{
-    minimizer:[
-      `...`,
+  mode: 'production',
+  optimization: {
+    minimizer: [
+      '...',
       new CssMinimizerPlugin(),
     ],
   },
@@ -36,12 +36,17 @@ module.exports = {
     }),
     new CopyWebpackPlugin({
       patterns: [
-        { from: 'public', globOptions: { ignore: ['**/index.html', '**/service-worker.js'] } }, // salin selain index.html
+        {
+          from: 'public',
+          globOptions: {
+            ignore: ['**/index.html', '**/service-worker.js'], // ⚠️ jangan salin sw dari public
+          },
+        },
       ],
     }),
-    new GenerateSW({
-      clientsClaim: true,
-      skipWaiting: true,
+    new InjectManifest({
+      swSrc: './src/service-worker.js',
+      swDest: 'service-worker.js',
     }),
   ],
 };
