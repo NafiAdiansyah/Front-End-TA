@@ -1,7 +1,7 @@
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open('mqtt-cache-v1').then(cache => {
-      return cache.addAll([
+      return cache.addAll(self.__WB_MANIFEST);([
         '/',
         '/index.html',
         '/styles.css',
