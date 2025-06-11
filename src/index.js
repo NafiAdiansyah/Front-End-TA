@@ -64,7 +64,7 @@ function setProgressCircle(circleId, percentage){
     let color = "#00cfd1";
     if(percentage < 40){
         color = "#e53935";
-    } else if(percentage < 60){
+    } else if(percentage < 60 && percentage < 80){
         color = "#fbc02d";
     }
 
@@ -238,7 +238,7 @@ function updateStatusCondition(average, wateringStatus) {
         if (average < 50) {
             conditionText = "Kering";
             color = "#e53935"; 
-        } else if (average <= 85) {
+        } else if (average <= 80) {
             conditionText = "Normal";
             color = "#fbc02d"; 
         } else {
